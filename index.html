@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HCI & Software Engineering Study Portal | 12-Week Theory & 120-Question MCQ Arena</title>
+  <meta name="description" content="Modern responsive study portal featuring a 12-Week Theory Course Viewer and a 120-Question MCQ Practice Arena with Study and Exam simulation modes.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom Design System Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Sidebar Backdrop for Mobile -->
+  <div class="sidebar-backdrop" id="sidebar-overlay"></div>
+
+  <!-- Master Layout Shell -->
+  <div class="portal-shell">
+
+    <!-- PERSISTENT LEFT SIDEBAR -->
+    <aside class="app-sidebar" id="app-sidebar">
+      
+      <!-- Top Section: Brand & Mode Switcher -->
+      <div class="sidebar-header">
+        <div class="brand-row">
+          <div class="brand-info">
+            <div class="brand-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
+            <div class="brand-titles">
+              <h1>HCI Study Portal</h1>
+              <span>NPTEL 12-Week Syllabus</span>
+            </div>
+          </div>
+          <button class="sidebar-toggle-btn collapse-btn" id="btn-collapse-sidebar" title="Close Sidebar (Press '[' to toggle)" aria-label="Close sidebar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+              <path d="M9 3v18"></path>
+              <path d="m14 9-3 3 3 3"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mode Switcher -->
+        <div class="mode-toggle-group">
+          <button class="mode-btn active" id="btn-mode-theory">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+            Theory Portal
+          </button>
+          <button class="mode-btn" id="btn-mode-mcq">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            MCQ Arena
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable Sidebar Body -->
+      <div class="sidebar-body">
+        
+        <!-- 1. Theory Navigation (Active in Theory Mode) -->
+        <div id="sidebar-theory-nav">
+          <div class="theory-progress-panel">
+            <div class="progress-label-row">
+              <span>Overall Progress</span>
+              <span id="theory-progress-text">0 of 12 Completed (0%)</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="theory-progress-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="weeks-stack" id="theory-weeks-list">
+            <!-- Dynamically populated from theoryData.js -->
+          </div>
+        </div>
+
+        <!-- 2. MCQ Navigation (Active in MCQ Mode) -->
+        <div id="sidebar-mcq-nav" style="display: none;">
+          <div class="mcq-nav-filter-wrap">
+            <select class="mcq-select" id="mcq-filter-select">
+              <option value="all">All 120 Questions</option>
+              <option value="flagged">Flagged for Review</option>
+              <optgroup label="Filter by Week">
+                <option value="week_1">Week 1: Foundations & Usability</option>
+                <option value="week_2">Week 2: Interactive Life Cycles</option>
+                <option value="week_3">Week 3: Requirement Gathering & CI</option>
+                <option value="week_4">Week 4: Interaction Models & Principles</option>
+                <option value="week_5">Week 5: Prototyping & Evaluation</option>
+                <option value="week_6">Week 6: System Design (DFD & ERD)</option>
+                <option value="week_7">Week 7: OOD & UML</option>
+                <option value="week_8">Week 8: Coding Standards & Testing</option>
+                <option value="week_9">Week 9: Black-Box Testing</option>
+                <option value="week_10">Week 10: White-Box Testing & CFG</option>
+                <option value="week_11">Week 11: Empirical Research</option>
+                <option value="week_12">Week 12: Inferential Stats & Agile</option>
+              </optgroup>
+              <optgroup label="Question Batches">
+                <option value="batch_1_20">Questions 1 to 20</option>
+                <option value="batch_21_40">Questions 21 to 40</option>
+                <option value="batch_41_60">Questions 41 to 60</option>
+                <option value="batch_61_80">Questions 61 to 80</option>
+                <option value="batch_81_100">Questions 81 to 100</option>
+                <option value="batch_101_120">Questions 101 to 120</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- Palette Stats Legend -->
+          <div class="palette-status-legend" id="mcq-palette-stats">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- 120 Question Palette Grid -->
+          <div class="palette-grid" id="mcq-palette-grid">
+            <!-- Dynamically populated 1 to 120 -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Persistent Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button class="footer-btn" id="theme-toggle-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span>Dark Mode</span>
+        </button>
+        <button class="footer-btn" id="btn-reset-progress" title="Reset all progress and answers">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          <span>Reset</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT VIEWPORT -->
+    <main class="app-viewport">
+      
+      <!-- Expand Sidebar Floating/Sticky Button (Shown when sidebar is collapsed) -->
+      <button class="btn-expand-sidebar" id="btn-expand-sidebar" title="Open Sidebar (Press '[' to toggle)" aria-label="Open sidebar navigation">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+          <path d="M9 3v18"></path>
+          <path d="m13 15 3-3-3-3"></path>
+        </svg>
+        <span>Open Nav</span>
+      </button>
+
+      <!-- Mobile Top Navbar -->
+      <div class="mobile-top-bar">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <button class="hamburger-btn" id="mobile-menu-btn" aria-label="Open Sidebar Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <span style="font-weight: 700; font-size: 0.92rem;">HCI Study Portal</span>
+        </div>
+        <div class="mobile-top-actions">
+          <span class="mobile-mode-badge" id="mobile-mode-badge">Theory</span>
+          <button class="mobile-theme-btn" id="mobile-theme-btn" aria-label="Toggle Light/Dark Theme" title="Toggle Theme">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 1. THEORY PORTAL MAIN VIEW -->
+      <div class="theory-main-container" id="view-theory-portal">
+        <div class="breadcrumb-bar" id="theory-breadcrumb">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div class="theory-content-header">
+          <div class="theory-title-block">
+            <span class="theory-read-badge" id="theory-read-time">Estimated Reading: 25 min</span>
+            <h2 id="theory-content-title">Week 1: Foundations of Interactive Systems & Usability</h2>
+          </div>
+          <button class="btn-complete" id="btn-mark-complete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+            <span>Mark as Complete</span>
+          </button>
+        </div>
+
+        <!-- Formatted Markdown Reading Area -->
+        <article class="prose-content" id="theory-body-content">
+          <!-- Dynamically populated -->
+        </article>
+
+        <!-- Previous / Next Week Navigation -->
+        <div class="theory-nav-footer">
+          <button class="btn-action-nav" id="theory-prev-week-btn">
+            ← Previous Week
+          </button>
+          <button class="btn-action-nav primary" id="theory-next-week-btn">
+            Next Week →
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. MCQ PRACTICE ARENA MAIN VIEW -->
+      <div class="mcq-main-container" id="view-mcq-arena" style="display: none;">
+        
+        <!-- Header Strip: Mode Switcher & Timer -->
+        <div class="mcq-top-strip">
+          <div class="mcq-mode-pill-group">
+            <button class="mcq-mode-btn active" id="mcq-mode-study">Study Mode</button>
+            <button class="mcq-mode-btn" id="mcq-mode-exam">Exam Mode</button>
+          </div>
+          <div class="exam-timer-box" id="exam-timer-wrapper" style="display: none;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span id="exam-timer-display">00:00</span>
+          </div>
+        </div>
+
+        <!-- Question Card Container -->
+        <div id="mcq-question-card-container">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Results & Analytics Dashboard Container -->
+        <div id="mcq-results-container" style="display: none;">
+          <!-- Dynamically populated upon exam submit -->
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Confirmation Submit Modal -->
+  <div class="modal-overlay" id="submit-modal">
+    <div class="modal-dialog">
+      <h3 class="modal-title">Submit Examination</h3>
+      <p class="modal-desc">Are you sure you want to finish your test? Your final score and mark will be displayed.</p>
+      
+      <div class="modal-stats-grid">
+        <div class="modal-stat-box">
+          <div class="modal-stat-val" id="modal-stat-answered" style="color: var(--status-green);">0</div>
+          <div class="modal-stat-lbl">Answered</div>
+        </div>
+        <div class="modal-stat-box">
+          <div class="modal-stat-val" id="modal-stat-unanswered" style="color: var(--status-blue);">120</div>
+          <div class="modal-stat-lbl">Unanswered</div>
+        </div>
+        <div class="modal-stat-box">
+          <div class="modal-stat-val" id="modal-stat-flagged" style="color: var(--status-yellow);">0</div>
+          <div class="modal-stat-lbl">Flagged</div>
+        </div>
+      </div>
+
+      <div class="modal-btn-row">
+        <button class="btn-action-nav" id="btn-cancel-submit">Return to Test</button>
+        <button class="btn-submit-test" id="btn-confirm-submit">Confirm & View Mark</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/theoryData.js"></script>
+  <script src="js/questionsData.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
