@@ -7,15 +7,10 @@ const Store = {
   activeWeek: 1,
   completedWeeks: [],
   currentQuestionId: 1,
-  mcqInteractionMode: 'study', // 'study' | 'exam'
   mcqFilter: 'all', // 'all' | 'flagged' | 'week_X' | 'batch_X'
   userAnswers: {}, // { [questionId]: optionIndex }
   flaggedQuestions: [], // array of question IDs
   visitedQuestions: [], // array of question IDs
-  examSubmitted: false,
-  examStartTime: null,
-  examSecondsElapsed: 0,
-  timerInterval: null,
   sidebarCollapsed: false,
 
   init() {
@@ -35,13 +30,10 @@ const Store = {
         this.activeWeek = parsed.activeWeek || 1;
         this.completedWeeks = parsed.completedWeeks || [];
         this.currentQuestionId = parsed.currentQuestionId || 1;
-        this.mcqInteractionMode = parsed.mcqInteractionMode || 'study';
         this.mcqFilter = parsed.mcqFilter || 'all';
         this.userAnswers = parsed.userAnswers || {};
         this.flaggedQuestions = parsed.flaggedQuestions || [];
         this.visitedQuestions = parsed.visitedQuestions || [];
-        this.examSubmitted = !!parsed.examSubmitted;
-        this.examSecondsElapsed = parsed.examSecondsElapsed || 0;
         this.sidebarCollapsed = !!parsed.sidebarCollapsed;
       }
     } catch (e) {
@@ -57,13 +49,10 @@ const Store = {
         activeWeek: this.activeWeek,
         completedWeeks: this.completedWeeks,
         currentQuestionId: this.currentQuestionId,
-        mcqInteractionMode: this.mcqInteractionMode,
         mcqFilter: this.mcqFilter,
         userAnswers: this.userAnswers,
         flaggedQuestions: this.flaggedQuestions,
         visitedQuestions: this.visitedQuestions,
-        examSubmitted: this.examSubmitted,
-        examSecondsElapsed: this.examSecondsElapsed,
         sidebarCollapsed: this.sidebarCollapsed
       };
       localStorage.setItem('nptel_study_portal_state', JSON.stringify(payload));
@@ -81,9 +70,6 @@ const Store = {
       this.visitedQuestions = [1];
       this.currentQuestionId = 1;
       this.activeWeek = 1;
-      this.examSubmitted = false;
-      this.examSecondsElapsed = 0;
-      if (this.timerInterval) clearInterval(this.timerInterval);
       this.saveState();
       UI.renderAll();
     }
@@ -106,11 +92,6 @@ const UI = {
     
     // Render initial views
     this.renderAll();
-    
-    // Start exam timer if in exam mode
-    if (Store.mcqInteractionMode === 'exam' && !Store.examSubmitted) {
-      this.startExamTimer();
-    }
   },
 
   closeMobileSidebar() {
@@ -241,46 +222,6 @@ const UI = {
       }
     });
 
-    // MCQ Mode Switcher (Study vs Exam)
-    const mcqStudyModeBtn = document.getElementById('mcq-mode-study');
-    const mcqExamModeBtn = document.getElementById('mcq-mode-exam');
-
-    if (mcqStudyModeBtn) {
-      mcqStudyModeBtn.addEventListener('click', () => {
-        Store.mcqInteractionMode = 'study';
-        Store.saveState();
-        this.renderMCQHeader();
-        this.renderMCQQuestion();
-      });
-    }
-
-    if (mcqExamModeBtn) {
-      mcqExamModeBtn.addEventListener('click', () => {
-        Store.mcqInteractionMode = 'exam';
-        Store.saveState();
-        this.startExamTimer();
-        this.renderMCQHeader();
-        this.renderMCQQuestion();
-      });
-    }
-
-    // Submit Modal Events
-    const submitModal = document.getElementById('submit-modal');
-    const btnCancelSubmit = document.getElementById('btn-cancel-submit');
-    const btnConfirmSubmit = document.getElementById('btn-confirm-submit');
-
-    if (btnCancelSubmit && submitModal) {
-      btnCancelSubmit.addEventListener('click', () => {
-        submitModal.classList.remove('active');
-      });
-    }
-
-    if (btnConfirmSubmit && submitModal) {
-      btnConfirmSubmit.addEventListener('click', () => {
-        submitModal.classList.remove('active');
-        this.submitExam();
-      });
-    }
   },
 
   renderAll() {
@@ -307,12 +248,7 @@ const UI = {
       if (mcqNav) mcqNav.style.display = 'block';
 
       this.renderMCQSidebar();
-      this.renderMCQHeader();
-      if (Store.examSubmitted) {
-        this.renderResultsDashboard();
-      } else {
-        this.renderMCQQuestion();
-      }
+      this.renderMCQQuestion();
     }
   },
 
@@ -508,7 +444,6 @@ const UI = {
         }
         Store.saveState();
         this.renderMCQSidebar();
-        this.renderMCQHeader();
         this.renderMCQQuestion();
       };
     }
@@ -560,7 +495,6 @@ const UI = {
         }
         Store.saveState();
         this.renderMCQSidebar();
-        this.renderMCQHeader();
         this.renderMCQQuestion();
         this.closeMobileSidebar();
       });
@@ -583,30 +517,10 @@ const UI = {
     return list;
   },
 
-  renderMCQHeader() {
-    const studyBtn = document.getElementById('mcq-mode-study');
-    const examBtn = document.getElementById('mcq-mode-exam');
-    const timerWrapper = document.getElementById('exam-timer-wrapper');
-
-    if (studyBtn && examBtn) {
-      if (Store.mcqInteractionMode === 'study') {
-        studyBtn.classList.add('active');
-        examBtn.classList.remove('active');
-        if (timerWrapper) timerWrapper.style.display = 'none';
-      } else {
-        studyBtn.classList.remove('active');
-        examBtn.classList.add('active');
-        if (timerWrapper) timerWrapper.style.display = 'flex';
-      }
-    }
-  },
-
   renderMCQQuestion() {
     const cardContainer = document.getElementById('mcq-question-card-container');
-    const resultsContainer = document.getElementById('mcq-results-container');
-
-    if (resultsContainer) resultsContainer.style.display = 'none';
-    if (cardContainer) cardContainer.style.display = 'block';
+    if (!cardContainer) return;
+    cardContainer.style.display = 'block';
 
     const q = QUESTIONS_DATA.find(item => item.id === Store.currentQuestionId) || QUESTIONS_DATA[0];
     const isFlagged = Store.flaggedQuestions.includes(q.id);
@@ -642,34 +556,26 @@ const UI = {
             const isCorrect = q.correctIndex === idx;
 
             let cardStateClass = "";
-            if (Store.mcqInteractionMode === 'study' && hasAnswered) {
+            let statusIcon = "";
+            if (hasAnswered) {
               if (isCorrect) {
                 cardStateClass = "option-correct";
+                statusIcon = `<span class="option-check-icon" aria-label="Correct Answer">✓</span>`;
               } else if (isSelected) {
                 cardStateClass = "option-wrong";
+                statusIcon = `<span class="option-cross-icon" aria-label="Wrong Answer">✕</span>`;
               }
-            } else if (isSelected) {
-              cardStateClass = "option-selected";
             }
 
             return `
               <div class="option-card ${cardStateClass}" data-optindex="${idx}">
                 <div class="option-indicator">${letter}</div>
                 <div class="option-label-text">${this.escape(opt)}</div>
+                ${statusIcon}
               </div>
             `;
           }).join('')}
         </div>
-
-        ${Store.mcqInteractionMode === 'study' && hasAnswered ? `
-          <div class="explanation-accordion-panel">
-            <div class="explanation-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-              <span>Verified Rationale: Option ${String.fromCharCode(65 + q.correctIndex)}</span>
-            </div>
-            <p class="explanation-body-text">${this.escape(q.explanation)}</p>
-          </div>
-        ` : ''}
 
         <!-- Bottom Action Bar -->
         <div class="mcq-bottom-action-bar">
@@ -682,11 +588,8 @@ const UI = {
             </button>
           </div>
           <div class="action-right-group">
-            <button class="btn-action-nav primary" id="btn-mcq-next">
-              ${q.id >= 120 ? 'Review Palette' : 'Next Question →'}
-            </button>
-            <button class="btn-submit-test" id="btn-trigger-submit">
-              Submit Test
+            <button class="btn-action-nav primary" id="btn-mcq-next" ${q.id >= 120 ? 'disabled' : ''}>
+              Next Question →
             </button>
           </div>
         </div>
@@ -747,8 +650,6 @@ const UI = {
           Store.saveState();
           this.renderMCQSidebar();
           this.renderMCQQuestion();
-        } else {
-          this.openSubmitModal();
         }
       });
     }
@@ -761,174 +662,6 @@ const UI = {
         Store.saveState();
         this.renderMCQSidebar();
         this.renderMCQQuestion();
-      });
-    }
-
-    // Trigger Submit Modal Button
-    const submitBtn = document.getElementById('btn-trigger-submit');
-    if (submitBtn) {
-      submitBtn.addEventListener('click', () => {
-        this.openSubmitModal();
-      });
-    }
-  },
-
-  openSubmitModal() {
-    const modal = document.getElementById('submit-modal');
-    if (!modal) return;
-
-    const total = QUESTIONS_DATA.length;
-    const answered = Object.keys(Store.userAnswers).length;
-    const unanswered = total - answered;
-    const flagged = Store.flaggedQuestions.length;
-
-    document.getElementById('modal-stat-answered').textContent = answered;
-    document.getElementById('modal-stat-unanswered').textContent = unanswered;
-    document.getElementById('modal-stat-flagged').textContent = flagged;
-
-    modal.classList.add('active');
-  },
-
-  submitExam() {
-    Store.examSubmitted = true;
-    if (Store.timerInterval) clearInterval(Store.timerInterval);
-    Store.saveState();
-    this.renderResultsDashboard();
-  },
-
-  startExamTimer() {
-    if (Store.timerInterval) clearInterval(Store.timerInterval);
-    const timerDisplay = document.getElementById('exam-timer-display');
-
-    const updateTimer = () => {
-      Store.examSecondsElapsed++;
-      const mins = Math.floor(Store.examSecondsElapsed / 60);
-      const secs = Store.examSecondsElapsed % 60;
-      if (timerDisplay) {
-        timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-      }
-    };
-
-    Store.timerInterval = setInterval(updateTimer, 1000);
-    updateTimer();
-  },
-
-  restartExam() {
-    Store.userAnswers = {};
-    Store.flaggedQuestions = [];
-    Store.visitedQuestions = [1];
-    Store.currentQuestionId = 1;
-    Store.examSubmitted = false;
-    Store.examSecondsElapsed = 0;
-    if (Store.timerInterval) clearInterval(Store.timerInterval);
-    Store.saveState();
-
-    const cardContainer = document.getElementById('mcq-question-card-container');
-    const resultsContainer = document.getElementById('mcq-results-container');
-    if (cardContainer) cardContainer.style.display = 'block';
-    if (resultsContainer) resultsContainer.style.display = 'none';
-
-    this.renderAll();
-    this.startExamTimer();
-  },
-
-  renderResultsDashboard() {
-    const cardContainer = document.getElementById('mcq-question-card-container');
-    const resultsContainer = document.getElementById('mcq-results-container');
-
-    if (cardContainer) cardContainer.style.display = 'none';
-    if (!resultsContainer) return;
-    resultsContainer.style.display = 'block';
-
-    const total = QUESTIONS_DATA.length;
-    let correctCount = 0;
-    let answeredCount = 0;
-
-    QUESTIONS_DATA.forEach(q => {
-      const userAns = Store.userAnswers[q.id];
-      if (userAns !== undefined) {
-        answeredCount++;
-        if (userAns === q.correctIndex) {
-          correctCount++;
-        }
-      }
-    });
-
-    const incorrectCount = answeredCount - correctCount;
-    const unansweredCount = total - answeredCount;
-    const percentage = Math.round((correctCount / total) * 100);
-    const mins = Math.floor(Store.examSecondsElapsed / 60);
-    const secs = Store.examSecondsElapsed % 60;
-    const timeSpentFormatted = `${mins}m ${String(secs).padStart(2, '0')}s`;
-
-    resultsContainer.innerHTML = `
-      <div class="score-only-dashboard">
-        <div class="score-hero-card">
-          <span class="score-hero-tag">Examination Result</span>
-          
-          <div class="score-main-display">
-            <span class="score-big-num">${correctCount}</span>
-            <span class="score-big-sep">/</span>
-            <span class="score-big-total">${total}</span>
-          </div>
-
-          <div class="score-percent-pill ${percentage >= 70 ? 'pass' : 'fail'}">
-            <span>Score: ${percentage}%</span>
-            <span>•</span>
-            <span>${percentage >= 70 ? 'PASSED (≥ 70%)' : 'BELOW PASS CRITERIA (< 70%)'}</span>
-          </div>
-
-          <div class="score-stats-row">
-            <div class="score-stat-cell">
-              <span class="stat-number text-success">${correctCount}</span>
-              <span class="stat-label">Correct</span>
-            </div>
-            <div class="score-stat-cell">
-              <span class="stat-number text-danger">${incorrectCount}</span>
-              <span class="stat-label">Incorrect</span>
-            </div>
-            <div class="score-stat-cell">
-              <span class="stat-number text-muted">${unansweredCount}</span>
-              <span class="stat-label">Unanswered</span>
-            </div>
-            <div class="score-stat-cell">
-              <span class="stat-number">${timeSpentFormatted}</span>
-              <span class="stat-label">Time Taken</span>
-            </div>
-          </div>
-
-          <div class="score-actions-row">
-            <button class="btn-restart-exam" id="btn-restart-exam">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="1 4 1 10 7 10"></polyline>
-                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-              </svg>
-              <span>Restart Test</span>
-            </button>
-            <button class="btn-action-nav" id="btn-back-to-study">
-              <span>Back to Study Mode</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-
-    // Restart Test Button Listener
-    const restartBtn = document.getElementById('btn-restart-exam');
-    if (restartBtn) {
-      restartBtn.addEventListener('click', () => {
-        this.restartExam();
-      });
-    }
-
-    // Back to Study Mode Button Listener
-    const backStudyBtn = document.getElementById('btn-back-to-study');
-    if (backStudyBtn) {
-      backStudyBtn.addEventListener('click', () => {
-        Store.mcqInteractionMode = 'study';
-        Store.examSubmitted = false;
-        Store.saveState();
-        this.renderAll();
       });
     }
   },

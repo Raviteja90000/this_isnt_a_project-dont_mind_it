@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HCI & Software Engineering Study Portal | 12-Week Theory & 120-Question MCQ Arena</title>
-  <meta name="description" content="Modern responsive study portal featuring a 12-Week Theory Course Viewer and a 120-Question MCQ Practice Arena with Study and Exam simulation modes.">
+  <meta name="description" content="Modern responsive study portal featuring a 12-Week Theory Course Viewer and a 120-Question MCQ Practice Arena with instant visual feedback.">
   
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -231,64 +231,14 @@
 
       <!-- 2. MCQ PRACTICE ARENA MAIN VIEW -->
       <div class="mcq-main-container" id="view-mcq-arena" style="display: none;">
-        
-        <!-- Header Strip: Mode Switcher & Timer -->
-        <div class="mcq-top-strip">
-          <div class="mcq-mode-pill-group">
-            <button class="mcq-mode-btn active" id="mcq-mode-study">Study Mode</button>
-            <button class="mcq-mode-btn" id="mcq-mode-exam">Exam Mode</button>
-          </div>
-          <div class="exam-timer-box" id="exam-timer-wrapper" style="display: none;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            <span id="exam-timer-display">00:00</span>
-          </div>
-        </div>
-
         <!-- Question Card Container -->
         <div id="mcq-question-card-container">
           <!-- Dynamically populated -->
         </div>
-
-        <!-- Results & Analytics Dashboard Container -->
-        <div id="mcq-results-container" style="display: none;">
-          <!-- Dynamically populated upon exam submit -->
-        </div>
-
       </div>
 
     </main>
 
-  </div>
-
-  <!-- Confirmation Submit Modal -->
-  <div class="modal-overlay" id="submit-modal">
-    <div class="modal-dialog">
-      <h3 class="modal-title">Submit Examination</h3>
-      <p class="modal-desc">Are you sure you want to finish your test? Your final score and mark will be displayed.</p>
-      
-      <div class="modal-stats-grid">
-        <div class="modal-stat-box">
-          <div class="modal-stat-val" id="modal-stat-answered" style="color: var(--status-green);">0</div>
-          <div class="modal-stat-lbl">Answered</div>
-        </div>
-        <div class="modal-stat-box">
-          <div class="modal-stat-val" id="modal-stat-unanswered" style="color: var(--status-blue);">120</div>
-          <div class="modal-stat-lbl">Unanswered</div>
-        </div>
-        <div class="modal-stat-box">
-          <div class="modal-stat-val" id="modal-stat-flagged" style="color: var(--status-yellow);">0</div>
-          <div class="modal-stat-lbl">Flagged</div>
-        </div>
-      </div>
-
-      <div class="modal-btn-row">
-        <button class="btn-action-nav" id="btn-cancel-submit">Return to Test</button>
-        <button class="btn-submit-test" id="btn-confirm-submit">Confirm & View Mark</button>
-      </div>
-    </div>
   </div>
 
   <!-- Application Scripts -->

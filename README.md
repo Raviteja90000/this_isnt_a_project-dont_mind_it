@@ -11,9 +11,8 @@ A modern, responsive, anti-slop interactive study portal and practice platform f
   - Collapsible minimalist sidebar navigation (`Week-01` to `Week-12`).
 
 - **120-Question MCQ Practice Arena:**
-  - 120 verified multiple-choice questions with verified rationales and explanations.
-  - **Study Mode:** Instant visual feedback (green/red indicators) and in-depth rationales upon selecting an option.
-  - **Exam Simulation Mode:** Live timer, distraction-free option selection, flag for review, and streamlined final score dashboard (`Correct / Total`, percentage, and instant `Restart Test` button).
+  - 120 verified multiple-choice questions with instant visual feedback.
+  - **Instant Visual Indicators:** Selecting an option immediately turns the correct answer green and wrong answers red with direct status glyphs (`✓` and `✕`) without clutter or verbose explanations.
   - Question Palette (1 to 120) with 4-state visual indicators (Unvisited, Visited, Answered, Flagged).
   - Filtering by Topic/Week, Flagged questions, or custom 20-question batches.
 
