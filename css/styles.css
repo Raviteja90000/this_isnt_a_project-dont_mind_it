@@ -1138,6 +1138,246 @@ button {
   background: var(--accent-clay-hover);
 }
 
+.btn-submit-test {
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: var(--status-red);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-submit-test:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-submit-test:active {
+  transform: translateY(0);
+}
+
+/* Score Only Dashboard */
+.score-only-dashboard {
+  max-width: 580px;
+  margin: 3rem auto;
+  animation: fadeIn 250ms ease;
+  width: 100%;
+}
+
+.score-hero-card {
+  text-align: center;
+  padding: 3.5rem 2.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.25);
+}
+
+.score-hero-tag {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent-clay);
+}
+
+.score-main-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  margin: 1.25rem 0 0.5rem;
+  line-height: 1;
+}
+
+.score-big-num {
+  font-size: 5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.04em;
+}
+
+.score-big-sep {
+  font-size: 3.2rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.score-big-total {
+  font-size: 2.6rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.score-percent-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.45rem 1.15rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 2.25rem;
+}
+
+.score-percent-pill.pass {
+  background: var(--status-green-subtle);
+  color: var(--status-green);
+  border: 1px solid var(--status-green);
+}
+
+.score-percent-pill.fail {
+  background: var(--status-red-subtle);
+  color: var(--status-red);
+  border: 1px solid var(--status-red);
+}
+
+.score-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  padding: 1.25rem 0.5rem;
+  background: var(--bg-app);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.score-stat-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.score-stat-cell .stat-number {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.score-stat-cell .stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.score-actions-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-restart-exam {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 2rem;
+  background: var(--accent-clay);
+  color: #ffffff;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(226, 109, 46, 0.35);
+  transition: all var(--transition-fast);
+}
+
+.btn-restart-exam:hover {
+  background: var(--accent-clay-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(226, 109, 46, 0.45);
+}
+
+.btn-restart-exam:active {
+  transform: translateY(0);
+}
+
+/* Confirmation Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-dialog {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  max-width: 440px;
+  width: 100%;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 180ms ease;
+}
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.modal-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.modal-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.modal-stat-box {
+  padding: 0.75rem;
+  background: var(--bg-app);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.modal-stat-val {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.modal-stat-lbl {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+.modal-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
@@ -1309,6 +1549,83 @@ button {
     padding: 0.65rem 0.5rem;
   }
 
+  #btn-trigger-submit {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  /* Score Dashboard Mobile */
+  .score-only-dashboard {
+    margin: 1.5rem auto;
+  }
+
+  .score-hero-card {
+    padding: 2rem 1.25rem;
+  }
+
+  .score-big-num {
+    font-size: 3.5rem;
+  }
+
+  .score-big-sep {
+    font-size: 2.2rem;
+  }
+
+  .score-big-total {
+    font-size: 1.8rem;
+  }
+
+  .score-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+    padding: 1rem 0.65rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .btn-restart-exam {
+    width: 100%;
+    justify-content: center;
+    padding: 0.8rem 1.5rem;
+    min-height: 46px;
+  }
+
+  /* Modal Dialog on Mobile */
+  .modal-dialog {
+    padding: 1.4rem 1.15rem;
+    margin: 1rem;
+    max-width: 100%;
+  }
+
+  .modal-stats-grid {
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-stat-val {
+    font-size: 1.15rem;
+  }
+
+  .modal-stat-lbl {
+    font-size: 0.65rem;
+  }
+
+  .modal-btn-row {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .modal-btn-row button {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+
   /* Theory Mode Header */
   .theory-content-header {
     flex-direction: column;
@@ -1406,7 +1723,7 @@ button {
     font-size: 0.72rem;
   }
 
-  #btn-mcq-prev, #btn-mcq-next {
+  #btn-mcq-prev, #btn-mcq-next, #btn-trigger-submit {
     font-size: 0.8rem;
   }
 }

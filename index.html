@@ -235,10 +235,43 @@
         <div id="mcq-question-card-container">
           <!-- Dynamically populated -->
         </div>
+
+        <!-- Results & Analytics Dashboard Container -->
+        <div id="mcq-results-container" style="display: none;">
+          <!-- Dynamically populated upon submit -->
+        </div>
       </div>
 
     </main>
 
+  </div>
+
+  <!-- Confirmation Submit Modal -->
+  <div class="modal-overlay" id="submit-modal">
+    <div class="modal-dialog">
+      <h3 class="modal-title">Submit Examination</h3>
+      <p class="modal-desc">Are you sure you want to finish your test? Your final score and breakdown will be displayed.</p>
+      
+      <div class="modal-stats-grid">
+        <div class="modal-stat-box">
+          <div class="modal-stat-val" id="modal-stat-answered" style="color: var(--status-green);">0</div>
+          <div class="modal-stat-lbl">Answered</div>
+        </div>
+        <div class="modal-stat-box">
+          <div class="modal-stat-val" id="modal-stat-unanswered" style="color: var(--status-blue);">120</div>
+          <div class="modal-stat-lbl">Unanswered</div>
+        </div>
+        <div class="modal-stat-box">
+          <div class="modal-stat-val" id="modal-stat-flagged" style="color: var(--status-yellow);">0</div>
+          <div class="modal-stat-lbl">Flagged</div>
+        </div>
+      </div>
+
+      <div class="modal-btn-row">
+        <button class="btn-action-nav" id="btn-cancel-submit">Return to Test</button>
+        <button class="btn-submit-test" id="btn-confirm-submit">Confirm & View Score</button>
+      </div>
+    </div>
   </div>
 
   <!-- Application Scripts -->

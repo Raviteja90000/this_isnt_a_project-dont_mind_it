@@ -11,6 +11,7 @@ const Store = {
   userAnswers: {}, // { [questionId]: optionIndex }
   flaggedQuestions: [], // array of question IDs
   visitedQuestions: [], // array of question IDs
+  examSubmitted: false,
   sidebarCollapsed: false,
 
   init() {
@@ -34,6 +35,7 @@ const Store = {
         this.userAnswers = parsed.userAnswers || {};
         this.flaggedQuestions = parsed.flaggedQuestions || [];
         this.visitedQuestions = parsed.visitedQuestions || [];
+        this.examSubmitted = !!parsed.examSubmitted;
         this.sidebarCollapsed = !!parsed.sidebarCollapsed;
       }
     } catch (e) {
@@ -53,6 +55,7 @@ const Store = {
         userAnswers: this.userAnswers,
         flaggedQuestions: this.flaggedQuestions,
         visitedQuestions: this.visitedQuestions,
+        examSubmitted: this.examSubmitted,
         sidebarCollapsed: this.sidebarCollapsed
       };
       localStorage.setItem('nptel_study_portal_state', JSON.stringify(payload));
@@ -70,6 +73,7 @@ const Store = {
       this.visitedQuestions = [1];
       this.currentQuestionId = 1;
       this.activeWeek = 1;
+      this.examSubmitted = false;
       this.saveState();
       UI.renderAll();
     }
@@ -222,6 +226,24 @@ const UI = {
       }
     });
 
+    // Submit Modal Events
+    const submitModal = document.getElementById('submit-modal');
+    const btnCancelSubmit = document.getElementById('btn-cancel-submit');
+    const btnConfirmSubmit = document.getElementById('btn-confirm-submit');
+
+    if (btnCancelSubmit && submitModal) {
+      btnCancelSubmit.addEventListener('click', () => {
+        submitModal.classList.remove('active');
+      });
+    }
+
+    if (btnConfirmSubmit && submitModal) {
+      btnConfirmSubmit.addEventListener('click', () => {
+        submitModal.classList.remove('active');
+        this.submitExam();
+      });
+    }
+
   },
 
   renderAll() {
@@ -248,7 +270,11 @@ const UI = {
       if (mcqNav) mcqNav.style.display = 'block';
 
       this.renderMCQSidebar();
-      this.renderMCQQuestion();
+      if (Store.examSubmitted) {
+        this.renderResultsDashboard();
+      } else {
+        this.renderMCQQuestion();
+      }
     }
   },
 
@@ -493,6 +519,7 @@ const UI = {
         if (!Store.visitedQuestions.includes(Store.currentQuestionId)) {
           Store.visitedQuestions.push(Store.currentQuestionId);
         }
+        Store.examSubmitted = false;
         Store.saveState();
         this.renderMCQSidebar();
         this.renderMCQQuestion();
@@ -519,6 +546,8 @@ const UI = {
 
   renderMCQQuestion() {
     const cardContainer = document.getElementById('mcq-question-card-container');
+    const resultsContainer = document.getElementById('mcq-results-container');
+    if (resultsContainer) resultsContainer.style.display = 'none';
     if (!cardContainer) return;
     cardContainer.style.display = 'block';
 
@@ -590,6 +619,9 @@ const UI = {
             <button class="btn-action-nav primary" id="btn-mcq-next" ${q.id >= 120 ? 'disabled' : ''}>
               Next Question →
             </button>
+            <button class="btn-submit-test" id="btn-trigger-submit">
+              Submit Test
+            </button>
           </div>
         </div>
       </div>
@@ -652,6 +684,154 @@ const UI = {
           this.renderMCQSidebar();
           this.renderMCQQuestion();
         }
+      });
+    }
+
+    // Trigger Submit Modal Button
+    const submitBtn = document.getElementById('btn-trigger-submit');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', () => {
+        this.openSubmitModal();
+      });
+    }
+  },
+
+  openSubmitModal() {
+    const modal = document.getElementById('submit-modal');
+    if (!modal) return;
+
+    const total = QUESTIONS_DATA.length;
+    const answered = Object.keys(Store.userAnswers).length;
+    const unanswered = total - answered;
+    const flagged = Store.flaggedQuestions.length;
+
+    const ansEl = document.getElementById('modal-stat-answered');
+    const unansEl = document.getElementById('modal-stat-unanswered');
+    const flagEl = document.getElementById('modal-stat-flagged');
+
+    if (ansEl) ansEl.textContent = answered;
+    if (unansEl) unansEl.textContent = unanswered;
+    if (flagEl) flagEl.textContent = flagged;
+
+    modal.classList.add('active');
+  },
+
+  submitExam() {
+    Store.examSubmitted = true;
+    Store.saveState();
+    this.renderResultsDashboard();
+  },
+
+  restartExam() {
+    Store.userAnswers = {};
+    Store.flaggedQuestions = [];
+    Store.visitedQuestions = [1];
+    Store.currentQuestionId = 1;
+    Store.examSubmitted = false;
+    Store.saveState();
+
+    const cardContainer = document.getElementById('mcq-question-card-container');
+    const resultsContainer = document.getElementById('mcq-results-container');
+    if (cardContainer) cardContainer.style.display = 'block';
+    if (resultsContainer) resultsContainer.style.display = 'none';
+
+    this.renderAll();
+  },
+
+  renderResultsDashboard() {
+    const cardContainer = document.getElementById('mcq-question-card-container');
+    const resultsContainer = document.getElementById('mcq-results-container');
+
+    if (cardContainer) cardContainer.style.display = 'none';
+    if (!resultsContainer) return;
+    resultsContainer.style.display = 'block';
+
+    const total = QUESTIONS_DATA.length;
+    let correctCount = 0;
+    let answeredCount = 0;
+
+    QUESTIONS_DATA.forEach(q => {
+      const userAns = Store.userAnswers[q.id];
+      if (userAns !== undefined) {
+        answeredCount++;
+        if (userAns === q.correctIndex) {
+          correctCount++;
+        }
+      }
+    });
+
+    const incorrectCount = answeredCount - correctCount;
+    const unansweredCount = total - answeredCount;
+    const percentage = Math.round((correctCount / total) * 100);
+    const accuracy = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+
+    resultsContainer.innerHTML = `
+      <div class="score-only-dashboard">
+        <div class="score-hero-card">
+          <span class="score-hero-tag">Examination Result</span>
+          
+          <div class="score-main-display">
+            <span class="score-big-num">${correctCount}</span>
+            <span class="score-big-sep">/</span>
+            <span class="score-big-total">${total}</span>
+          </div>
+
+          <div class="score-percent-pill ${percentage >= 70 ? 'pass' : 'fail'}">
+            <span>Score: ${percentage}%</span>
+            <span>•</span>
+            <span>${percentage >= 70 ? 'PASSED (≥ 70%)' : 'BELOW PASS CRITERIA (< 70%)'}</span>
+          </div>
+
+          <div class="score-stats-row">
+            <div class="score-stat-cell">
+              <span class="stat-number text-success">${correctCount}</span>
+              <span class="stat-label">Correct</span>
+            </div>
+            <div class="score-stat-cell">
+              <span class="stat-number text-danger">${incorrectCount}</span>
+              <span class="stat-label">Incorrect</span>
+            </div>
+            <div class="score-stat-cell">
+              <span class="stat-number text-muted">${unansweredCount}</span>
+              <span class="stat-label">Unanswered</span>
+            </div>
+            <div class="score-stat-cell">
+              <span class="stat-number">${accuracy}%</span>
+              <span class="stat-label">Accuracy</span>
+            </div>
+          </div>
+
+          <div class="score-actions-row">
+            <button class="btn-restart-exam" id="btn-restart-exam">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              <span>Restart Test</span>
+            </button>
+            <button class="btn-action-nav" id="btn-review-questions">
+              <span>Review Questions</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Restart Test Button Listener
+    const restartBtn = document.getElementById('btn-restart-exam');
+    if (restartBtn) {
+      restartBtn.addEventListener('click', () => {
+        this.restartExam();
+      });
+    }
+
+    // Review Questions Button Listener
+    const reviewBtn = document.getElementById('btn-review-questions');
+    if (reviewBtn) {
+      reviewBtn.addEventListener('click', () => {
+        Store.examSubmitted = false;
+        Store.saveState();
+        this.renderAll();
       });
     }
   },

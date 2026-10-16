@@ -12,7 +12,8 @@ A modern, responsive, anti-slop interactive study portal and practice platform f
 
 - **120-Question MCQ Practice Arena:**
   - 120 verified multiple-choice questions with instant visual feedback.
-  - **Instant Visual Indicators:** Selecting an option immediately turns the correct answer green and wrong answers red with direct status glyphs (`✓` and `✕`) without clutter or verbose explanations.
+  - **Instant Visual Indicators:** Selecting an option immediately turns the correct answer green and wrong answers red with direct status glyphs (`✓` and `✕`). Once an option is chosen, the question is permanently locked to prevent accidental changes.
+  - **Submit & Score Dashboard:** Instant "Submit Test" button with confirmation modal displaying answered/unanswered counts and a comprehensive score breakdown (`Correct / Total`, percentage, pass criteria, and restart/review controls).
   - Question Palette (1 to 120) with 4-state visual indicators (Unvisited, Visited, Answered, Flagged).
   - Filtering by Topic/Week, Flagged questions, or custom 20-question batches.
 
