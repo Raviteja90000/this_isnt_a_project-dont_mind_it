@@ -549,7 +549,7 @@ const UI = {
 
         <h3 class="mcq-question-text">${this.escape(q.question)}</h3>
 
-        <div class="mcq-options-group">
+        <div class="mcq-options-group ${hasAnswered ? 'answered' : ''}">
           ${q.options.map((opt, idx) => {
             const letter = String.fromCharCode(65 + idx);
             const isSelected = selectedOption === idx;
@@ -564,11 +564,13 @@ const UI = {
               } else if (isSelected) {
                 cardStateClass = "option-wrong";
                 statusIcon = `<span class="option-cross-icon" aria-label="Wrong Answer">✕</span>`;
+              } else {
+                cardStateClass = "option-disabled";
               }
             }
 
             return `
-              <div class="option-card ${cardStateClass}" data-optindex="${idx}">
+              <div class="option-card ${cardStateClass}" data-optindex="${idx}" ${hasAnswered ? 'tabindex="-1"' : 'tabindex="0"'}>
                 <div class="option-indicator">${letter}</div>
                 <div class="option-label-text">${this.escape(opt)}</div>
                 ${statusIcon}
@@ -583,9 +585,6 @@ const UI = {
             <button class="btn-action-nav" id="btn-mcq-prev" ${q.id <= 1 ? 'disabled' : ''}>
               ← Previous
             </button>
-            <button class="btn-action-nav" id="btn-mcq-clear">
-              Clear Choice
-            </button>
           </div>
           <div class="action-right-group">
             <button class="btn-action-nav primary" id="btn-mcq-next" ${q.id >= 120 ? 'disabled' : ''}>
@@ -596,16 +595,18 @@ const UI = {
       </div>
     `;
 
-    // Attach Option Click Handler
-    cardContainer.querySelectorAll('.option-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const optIdx = parseInt(card.dataset.optindex);
-        Store.userAnswers[q.id] = optIdx;
-        Store.saveState();
-        this.renderMCQSidebar();
-        this.renderMCQQuestion();
+    // Attach Option Click Handler (Only if not yet answered)
+    if (!hasAnswered) {
+      cardContainer.querySelectorAll('.option-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const optIdx = parseInt(card.dataset.optindex);
+          Store.userAnswers[q.id] = optIdx;
+          Store.saveState();
+          this.renderMCQSidebar();
+          this.renderMCQQuestion();
+        });
       });
-    });
+    }
 
     // Toggle Flag Handler
     const flagBtn = document.getElementById('btn-toggle-flag');
@@ -651,17 +652,6 @@ const UI = {
           this.renderMCQSidebar();
           this.renderMCQQuestion();
         }
-      });
-    }
-
-    // Clear Choice Button
-    const clearBtn = document.getElementById('btn-mcq-clear');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        delete Store.userAnswers[q.id];
-        Store.saveState();
-        this.renderMCQSidebar();
-        this.renderMCQQuestion();
       });
     }
   },

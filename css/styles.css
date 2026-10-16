@@ -1077,6 +1077,24 @@ button {
   color: #dc2626;
 }
 
+/* Answered / Locked States (Cannot change answer once selected) */
+.mcq-options-group.answered {
+  pointer-events: none;
+}
+
+.mcq-options-group.answered .option-card {
+  cursor: default !important;
+}
+
+.mcq-options-group.answered .option-card.option-disabled {
+  opacity: 0.45;
+  filter: grayscale(0.25);
+}
+
+.mcq-options-group.answered .option-card:hover {
+  transform: none !important;
+}
+
 /* Bottom Action Bar */
 .mcq-bottom-action-bar {
   display: flex;
@@ -1256,18 +1274,11 @@ button {
     font-size: 0.76rem;
   }
 
-  /* Answer Feedback Banner Mobile */
-  .answer-feedback-banner {
-    padding: 0.75rem 1rem;
-    margin-bottom: 1.25rem;
-    font-size: 0.9rem;
-  }
-
-  /* MCQ Bottom Navigation Toolbar: 2x2 Ergonomic Mobile Grid */
+  /* MCQ Bottom Navigation Toolbar: Ergonomic Mobile Row */
   .mcq-bottom-action-bar {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.55rem;
+    gap: 0.65rem;
     padding-top: 1.15rem;
   }
 
@@ -1277,51 +1288,25 @@ button {
 
   #btn-mcq-prev {
     grid-column: 1;
-    grid-row: 1;
     width: 100%;
     min-height: 46px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.84rem;
+    font-size: 0.86rem;
     padding: 0.65rem 0.5rem;
   }
 
   #btn-mcq-next {
     grid-column: 2;
-    grid-row: 1;
     width: 100%;
     min-height: 46px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.84rem;
+    font-size: 0.86rem;
     font-weight: 700;
     padding: 0.65rem 0.5rem;
-  }
-
-  #btn-mcq-clear {
-    grid-column: 1;
-    grid-row: 2;
-    width: 100%;
-    min-height: 42px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.78rem;
-    padding: 0.55rem 0.5rem;
-  }
-
-  #btn-trigger-submit {
-    grid-column: 2;
-    grid-row: 2;
-    width: 100%;
-    min-height: 42px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.78rem;
-    padding: 0.55rem 0.5rem;
   }
 
   /* Theory Mode Header */
@@ -1423,9 +1408,5 @@ button {
 
   #btn-mcq-prev, #btn-mcq-next {
     font-size: 0.8rem;
-  }
-
-  #btn-mcq-clear {
-    font-size: 0.74rem;
   }
 }
